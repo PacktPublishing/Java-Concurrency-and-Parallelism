@@ -2,7 +2,6 @@ package com.example;
 
 import java.io.File;
 import java.io.IOException;
-
 import org.deeplearning4j.datasets.iterator.impl.IrisDataSetIterator;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
@@ -38,11 +37,11 @@ public class IrisClassification {
         // Train the model
         model.fit(irisIter);
 
-        // Evaluate the model
+        // Evaluate the model to iris-model.zip
         Evaluation eval = model.evaluate(irisIter);
         System.out.println(eval.stats());
 
-        // Save the model
+        // Save the model to 
         ModelSerializer.writeModel(model, new File("iris-model.zip"), true);
     }
 }
