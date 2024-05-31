@@ -37,7 +37,7 @@ public class IrisClassification {
         // Train the model
         model.fit(irisIter);
 
-        // Evaluate the model to iris-model.zip
+        // Evaluate the model and save to iris-model.zip
         Evaluation eval = model.evaluate(irisIter);
         System.out.println(eval.stats());
 
