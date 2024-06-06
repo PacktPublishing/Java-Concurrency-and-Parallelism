@@ -1,0 +1,11 @@
+{
+    "bookingId": "booking123",
+    "userId": "user123",
+    "paymentToken": "token123",
+    "amount": "150.00",
+    "customerName": "John Doe",
+    "customerEmail": "john.doe@example.com",
+    "bookingAmount": 150.00,
+    "currency": "USD",
+    "bookingDate": "2024-06-15"
+}  

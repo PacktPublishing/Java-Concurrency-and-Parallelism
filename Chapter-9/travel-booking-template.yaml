@@ -1,0 +1,349 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template to set up API Gateway and other required services for a travel booking application.
+
+Parameters:
+  LambdaCodeBucket:
+    Type: String
+    Default: serverlessapp2lambda #please replace the bucket name with your bucket name
+    Description: S3 bucket where Lambda code is stored
+
+Resources:
+
+  # DynamoDB Tables
+  BookingTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: BookingTable
+      AttributeDefinitions:
+        - AttributeName: BookingId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: BookingId
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+
+  InventoryTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: InventoryTable
+      AttributeDefinitions:
+        - AttributeName: ItemId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: ItemId
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+
+  # Cognito User Pool
+  CognitoUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: TravelBookingUserPool
+
+  # S3 Bucket for processed data
+  ProcessedDataBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: booking-processed-data-bucket
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+  # SNS Topic for notifications
+  BookingNotificationTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: BookingNotificationTopic
+
+  # IAM Role for Lambda
+   # IAM Role for Lambda
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              # DynamoDB permissions for BookingTable
+              - Effect: Allow
+                Action:
+                  - dynamodb:PutItem
+                  - dynamodb:GetItem
+                  - dynamodb:UpdateItem
+                Resource: !GetAtt BookingTable.Arn
+              # Cognito permissions for user authentication
+              - Effect: Allow
+                Action:
+                  - cognito-idp:AdminInitiateAuth
+                  - cognito-idp:AdminGetUser
+                Resource: !GetAtt CognitoUserPool.Arn
+              # S3 permissions for Lambda code and processed data bucket
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                Resource:
+                  - !Sub arn:aws:s3:::${LambdaCodeBucket}/*
+                  - arn:aws:s3:::booking-processed-data-bucket/*
+               # SNS permissions for sending notifications
+              - Effect: Allow
+                Action:
+                  - sns:Publish
+                Resource: !Ref BookingNotificationTopic
+
+  # Lambda Functions
+  BookingValidationFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: BookingValidationFunction
+      Handler: org.springframework.cloud.function.adapter.aws.FunctionInvoker
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Runtime: java11
+      Timeout: 30  # Set the timeout to 30 seconds or more if needed
+      MemorySize: 1024  # Increase memory size to 1024 MB
+      Code:
+        S3Bucket: !Ref LambdaCodeBucket
+        S3Key: booking-validation-1.0-SNAPSHOT-aws.jar
+      Environment:
+       Variables:
+        SPRING_CLOUD_FUNCTION_DEFINITION: bookingValidation
+
+  PaymentProcessingFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: PaymentProcessingFunction
+      Handler: org.springframework.cloud.function.adapter.aws.FunctionInvoker
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Runtime: java11
+      Timeout: 30  # Set the timeout to 30 seconds or more if needed
+      MemorySize: 1024  # Increase memory size to 1024 MB
+      Code:
+        S3Bucket: !Ref LambdaCodeBucket
+        S3Key: payment-processing-1.0-SNAPSHOT-aws.jar
+      Environment:
+        Variables:
+          SPRING_CLOUD_FUNCTION_DEFINITION: paymentProcessing
+          DYNAMODB_TABLE_NAME: BookingTable
+          
+  SecurityCheckFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: SecurityCheckFunction
+      Handler: org.springframework.cloud.function.adapter.aws.FunctionInvoker
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Runtime: java11
+      Timeout: 30  # Set the timeout to 30 seconds or more if needed
+      MemorySize: 1024  # Increase memory size to 1024 MB
+      Code:
+        S3Bucket: !Ref LambdaCodeBucket
+        S3Key: security-check-1.0-SNAPSHOT-aws.jar
+      Environment:
+        Variables:
+          SPRING_CLOUD_FUNCTION_DEFINITION: securityCheck
+          DYNAMODB_TABLE_NAME: BookingTable
+          
+  InventoryUpdateFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: InventoryUpdateFunction
+      Handler: org.springframework.cloud.function.adapter.aws.FunctionInvoker
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Runtime: java11
+      Timeout: 30  # Set the timeout to 30 seconds or more if needed
+      MemorySize: 1024  # Increase memory size to 1024 MB
+      Code:
+        S3Bucket: !Ref LambdaCodeBucket
+        S3Key: inventory-update-1.0-SNAPSHOT-aws.jar
+      Environment:
+       Variables:
+        SPRING_CLOUD_FUNCTION_DEFINITION: inventoryUpdate
+        INVENTORY_TABLE_NAME: InventoryTable
+        BOOKING_TABLE_NAME: BookingTable
+          
+  DataProcessingFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: DataProcessingFunction
+      Handler: org.springframework.cloud.function.adapter.aws.FunctionInvoker
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Runtime: java11
+      Timeout: 30  # Set the timeout to 30 seconds or more if needed
+      MemorySize: 1024  # Increase memory size to 1024 MB
+      Code:
+        S3Bucket: !Ref LambdaCodeBucket
+        S3Key: data-processing-1.0-SNAPSHOT-aws.jar
+      Environment:
+       Variables:
+        SPRING_CLOUD_FUNCTION_DEFINITION: dataProcessing
+          
+  SendNotificationFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: SendNotificationFunction
+      Handler: org.springframework.cloud.function.adapter.aws.FunctionInvoker
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Runtime: java11
+      Timeout: 30  # Set the timeout to 30 seconds or more if needed
+      MemorySize: 1024  # Increase memory size to 1024 MB
+      Code:
+        S3Bucket: !Ref LambdaCodeBucket
+        S3Key: send-notification-1.0-SNAPSHOT-aws.jar
+      Environment:
+        Variables:
+          SPRING_CLOUD_FUNCTION_DEFINITION: sendNotification
+          BOOKING_NOTIFICATION_TOPIC_ARN: !Ref BookingNotificationTopic
+
+  # Step Function
+  TravelBookingStateMachine:
+    Type: AWS::StepFunctions::StateMachine
+    Properties:
+      StateMachineName: TravelBookingStateMachine
+      RoleArn: !GetAtt LambdaExecutionRole.Arn
+      DefinitionString: !Sub
+        - |
+          {
+            "Comment": "Travel Booking Workflow",
+            "StartAt": "ParallelTasks",
+            "States": {
+              "ParallelTasks": {
+                "Type": "Parallel",
+                "Branches": [
+                  {
+                    "StartAt": "BookingValidation",
+                    "States": {
+                      "BookingValidation": {
+                        "Type": "Task",
+                        "Resource": "${BookingValidationFunctionArn}",
+                        "End": true
+                      }
+                    }
+                  },
+                  {
+                    "StartAt": "PaymentProcessing",
+                    "States": {
+                      "PaymentProcessing": {
+                        "Type": "Task",
+                        "Resource": "${PaymentProcessingFunctionArn}",
+                        "End": true
+                      }
+                    }
+                  },
+                  {
+                    "StartAt": "SecurityCheck",
+                    "States": {
+                      "SecurityCheck": {
+                        "Type": "Task",
+                        "Resource": "${SecurityCheckFunctionArn}",
+                        "End": true
+                      }
+                    }
+                  }
+                ],
+                "Next": "InventoryUpdate"
+              },
+              "InventoryUpdate": {
+                "Type": "Task",
+                "Resource": "${InventoryUpdateFunctionArn}",
+                "Next": "DataProcessing"
+              },
+              "DataProcessing": {
+                "Type": "Task",
+                "Resource": "${DataProcessingFunctionArn}",
+                "Next": "SendNotification"
+              },
+              "SendNotification": {
+                "Type": "Task",
+                "Resource": "${SendNotificationFunctionArn}",
+                "End": true
+              }
+            }
+          }
+        - BookingValidationFunctionArn: !GetAtt BookingValidationFunction.Arn
+          PaymentProcessingFunctionArn: !GetAtt PaymentProcessingFunction.Arn
+          SecurityCheckFunctionArn: !GetAtt SecurityCheckFunction.Arn
+          InventoryUpdateFunctionArn: !GetAtt InventoryUpdateFunction.Arn
+          DataProcessingFunctionArn: !GetAtt DataProcessingFunction.Arn
+          SendNotificationFunctionArn: !GetAtt SendNotificationFunction.Arn
+
+  # API Gateway
+  TravelBookingApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: TravelBookingApi
+
+  TravelBookingResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt TravelBookingApi.RootResourceId
+      PathPart: booking
+      RestApiId: !Ref TravelBookingApi
+
+  TravelBookingMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: COGNITO_USER_POOLS
+      AuthorizerId: !Ref TravelBookingAuthorizer
+      HttpMethod: POST
+      ResourceId: !Ref TravelBookingResource
+      RestApiId: !Ref TravelBookingApi
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS
+        Uri: !Sub arn:aws:apigateway:${AWS::Region}:states:action/StartExecution
+        Credentials: !GetAtt APIGatewayExecutionRole.Arn
+        RequestTemplates:
+          application/json: |
+            {
+              "input": "$util.escapeJavaScript($input.json('$'))",
+              "stateMachineArn": "${TravelBookingStateMachine}"
+            }
+        IntegrationResponses:
+          - StatusCode: 200
+
+  TravelBookingAuthorizer:
+    Type: AWS::ApiGateway::Authorizer
+    Properties:
+      Name: TravelBookingAuthorizer
+      Type: COGNITO_USER_POOLS
+      ProviderARNs:
+        - !GetAtt CognitoUserPool.Arn
+      RestApiId: !Ref TravelBookingApi
+      IdentitySource: method.request.header.Authorization
+
+  APIGatewayExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: apigateway.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: APIGatewayPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - states:StartExecution
+                Resource: !Ref TravelBookingStateMachine
+
+Outputs:
+  TravelBookingApiEndpoint:
+    Description: API Gateway endpoint URL for the travel booking API
+    Value: !Sub https://${TravelBookingApi}.execute-api.${AWS::Region}.amazonaws.com/prod/booking

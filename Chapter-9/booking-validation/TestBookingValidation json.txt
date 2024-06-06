@@ -1,0 +1,9 @@
+{
+  "bookingDate": "2024-06-15",
+  "itemId": "12345",
+  "customerName": "John Doe",
+  "customerEmail": "john.doe@example.com",
+  "bookingAmount": 150.00,
+  "currency": "USD"
+}
+
