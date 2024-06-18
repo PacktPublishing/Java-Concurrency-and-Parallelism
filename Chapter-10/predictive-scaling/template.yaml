@@ -1,0 +1,50 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Parameters:
+  LambdaCodeBucket:
+    Type: String
+    Default: serverlessapp2lambda #please replace the bucket name with your bucket name
+    Description: S3 bucket where Lambda code is stored
+Resources:
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: LambdaExecutionRole
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Policies:
+        - PolicyName: LambdaExecutionPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                  - "s3:GetObject"
+                  - "s3:PutObject"
+                Resource: "*"
+
+  PredictiveScaleFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: PredictiveScaleFunction
+      Handler: com.example.PredictiveScalingApplication::predictiveScaling
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Runtime: java11
+      Timeout: 30 # Set the timeout to 30 seconds or more if needed
+      MemorySize: 1024 # Increase memory size to 1024 MB
+      Code:
+        S3Bucket: !Ref LambdaCodeBucket
+        S3Key: prodictive-scaling-1.0-SNAPSHOT-aws.jar
+      Environment:
+        Variables:
+          SPRING_CLOUD_FUNCTION_DEFINITION: predictiveScaling
+
