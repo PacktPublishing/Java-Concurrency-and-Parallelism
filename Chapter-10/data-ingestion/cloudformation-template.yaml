@@ -1,0 +1,125 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Parameters:
+  LambdaCodeBucket:
+    Type: String
+    Default: serverlessapp2lambda #please replace the bucket name with your bucket name
+    Description: S3 bucket where Lambda code is stored
+
+Resources:
+  DataIngestionTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: DataIngestionTable
+      AttributeDefinitions:
+        - AttributeName: DataId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: DataId
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+
+  ProcessedDataBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: processed-data1-bucket
+
+  DataNotificationTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: DataNotificationTopic
+
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:PutItem
+                  - dynamodb:GetItem
+                  - dynamodb:UpdateItem
+                  - s3:PutObject
+                  - sns:Publish
+                Resource: "*"
+
+  DataIngestionFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: DataIngestionFunction
+      Handler: org.springframework.cloud.function.adapter.aws.FunctionInvoker
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Runtime: java11
+      Timeout: 30 # Set the timeout to 30 seconds or more if needed
+      MemorySize: 1024 # Increase memory size to 1024 MB
+      Code:
+        S3Bucket: !Ref LambdaCodeBucket
+        S3Key: data-ingestion-1.0-SNAPSHOT-aws.jar
+      Environment:
+        Variables:
+          SPRING_CLOUD_FUNCTION_DEFINITION: dataIngestion
+
+  RealTimeAnalyticsStateMachine:
+    Type: AWS::StepFunctions::StateMachine
+    Properties:
+      StateMachineName: RealTimeAnalyticsStateMachine
+      RoleArn: !GetAtt LambdaExecutionRole.Arn
+      DefinitionString: !Sub |
+        {
+          "Comment": "Real-Time Analytics Workflow",
+          "StartAt": "DataIngestion",
+          "States": {
+            "DataIngestion": {
+              "Type": "Task",
+              "Resource": "${DataIngestionFunction.Arn}",
+              "End": true
+            }
+          }
+        }
+
+  RealTimeAnalyticsApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: RealTimeAnalyticsApi
+
+  RealTimeAnalyticsResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt RealTimeAnalyticsApi.RootResourceId
+      PathPart: ingest
+      RestApiId: !Ref RealTimeAnalyticsApi
+
+  RealTimeAnalyticsMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: POST
+      ResourceId: !Ref RealTimeAnalyticsResource
+      RestApiId: !Ref RealTimeAnalyticsApi
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS
+        Uri: !Sub "arn:aws:apigateway:${AWS::Region}:states:action/StartExecution"
+        IntegrationResponses:
+          - StatusCode: 200
+        RequestTemplates:
+          application/json: |
+            {
+              "input": "$util.escapeJavaScript($input.json('$'))",
+              "stateMachineArn": "arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:${RealTimeAnalyticsStateMachine}"
+            }
+        PassthroughBehavior: WHEN_NO_TEMPLATES
+        Credentials: !GetAtt LambdaExecutionRole.Arn
+      MethodResponses:
+        - StatusCode: 200

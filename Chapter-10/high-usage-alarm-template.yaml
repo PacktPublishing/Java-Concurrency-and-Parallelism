@@ -1,0 +1,16 @@
+Resources:
+  HighMemoryUsageAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Alarm if server memory utilization exceeds 75%
+      Namespace: "CustomMetrics"
+      MetricName: "MemoryUtilization" # Ensure this custom metric is published
+      Statistic: "Average"
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 75
+      ComparisonOperator: "Graws cloudformation create-stack --stack-name LowMemoryUsageAlarmStack --template-body file://low-memory-alarm-template.yamleaterThanThreshold"
+      Dimensions:
+        - Name: "AutoScalingGroupName"
+          Value: "your-auto-scaling-group-name" # Replace with your actual ASG name
+

@@ -1,0 +1,9 @@
+Resources:
+  AutoScalingPolicy:
+    Type: "AWS::AutoScaling::ScalingPolicy"
+    Properties:
+      AutoScalingGroupName: "my-auto-scaling-group"
+      PolicyType: "SimpleScaling"
+      ScalingAdjustment: -1
+      AdjustmentType: "ChangeInCapacity"
+      Cooldown: 300

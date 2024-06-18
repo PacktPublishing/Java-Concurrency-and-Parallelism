@@ -1,0 +1,16 @@
+Resources:
+  LowMemoryUsageAlarm:
+    Type: "AWS::CloudWatch::Alarm"
+    Properties:
+      AlarmName: "LowMemoryUsage"
+      MetricName: "MemoryUtilization"
+      Namespace: "AWS/EC2"
+      Statistic: "Average"
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 30
+      ComparisonOperator: "LessThanThreshold"
+      Dimensions:
+        - Name: "AutoScalingGroupName"
+          Value: "my-auto-scaling-group"
+
