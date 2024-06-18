@@ -32,10 +32,10 @@ Resources:
                   - "s3:PutObject"
                 Resource: "*"
 
-  PredictiveScaleFunction:
+  PredictiveScalingFunction:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: PredictiveScaleFunction
+      FunctionName: PredictiveScalingFunction 
       Handler: com.example.PredictiveScalingApplication::predictiveScaling
       Role: !GetAtt LambdaExecutionRole.Arn
       Runtime: java11
