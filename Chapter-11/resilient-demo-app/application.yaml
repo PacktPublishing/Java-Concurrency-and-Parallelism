@@ -1,0 +1,5 @@
+serviceA:
+    ribbon:
+    NIWSServerListClassName: com.netflix.loadbalancer.ConfigurationBasedServerList
+    ServerListSubsetFilter:
+    size: 3

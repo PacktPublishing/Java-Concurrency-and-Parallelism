@@ -1,0 +1,65 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Parameters:
+  UniqueSuffix:
+    Type: String
+    Description: A unique suffix for the bucket names to ensure they are globally unique
+    MinLength: 1
+    MaxLength: 20
+    AllowedPattern: "[a-zA-Z0-9-]*"
+    ConstraintDescription: "can contain only alphanumeric characters and hyphens."
+  HostedZoneName:
+    Type: String
+    Description: The name of an existing Route 53 hosted zone
+  DomainName:
+    Type: String
+    Description: The domain name for the Route 53 record set
+
+Resources:
+  MyBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Sub "resilient-bucket-${UniqueSuffix}"
+
+  BackupBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Sub "resilient-bucket-backup-${UniqueSuffix}"
+
+  MyTable:
+    Type: "AWS::DynamoDB::Table"
+    Properties:
+      TableName: "MyTable"
+      AttributeDefinitions:
+        - AttributeName: "Key"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "Key"
+          KeyType: "HASH"
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+
+  MyLoadBalancer:
+    Type: "AWS::ElasticLoadBalancing::LoadBalancer"
+    Properties:
+      AvailabilityZones: !GetAZs ""
+      Listeners:
+        - LoadBalancerPort: "80"
+          InstancePort: "8080"
+          Protocol: "HTTP"
+      HealthCheck:
+        Target: "HTTP:8080/health"
+        Interval: "30"
+        Timeout: "5"
+        UnhealthyThreshold: "2"
+        HealthyThreshold: "10"
+
+  MyRoute53:
+    Type: "AWS::Route53::RecordSet"
+    Properties:
+      HostedZoneName: !Ref HostedZoneName
+      Name: !Ref DomainName
+      Type: "A"
+      AliasTarget:
+        HostedZoneId: !GetAtt MyLoadBalancer.CanonicalHostedZoneNameID
+        DNSName: !GetAtt MyLoadBalancer.DNSName
