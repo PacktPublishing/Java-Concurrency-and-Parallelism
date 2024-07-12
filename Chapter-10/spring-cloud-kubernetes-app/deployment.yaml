@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auto-scaling-demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: auto-scaling-demo
+  template:
+    metadata:
+      labels:
+        app: auto-scaling-demo
+    spec:
+      containers:
+      - name: auto-scaling-demo
+        image: myrepo/auto-scaling-demo:latest
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            cpu: "200m"
+          limits:
+            cpu: "500m"
