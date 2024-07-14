@@ -1,0 +1,84 @@
+You need to run aws configure before running the CloudFormation command to set up your AWS credentials and default region. 
+Here’s the step-by-step process:
+
+Step 1: Run aws configure: This command sets up your AWS CLI with the necessary credentials and default settings. 
+You will need your AWS Access Key ID, Secret Access Key, and the default region name (e.g., us-west-2).
+aws configure
+You will be prompted to enter your AWS credentials and configuration settings:
+AWS Access Key ID [None]: YOUR_ACCESS_KEY_ID
+AWS Secret Access Key [None]: YOUR_SECRET_ACCESS_KEY
+Default region name [None]: YOUR_DEFAULT_REGION
+Default output format [None]: json
+
+Step 2: run the following aws cli commands:
+#create ecr repository
+aws ecr create-repository --repository-name high-concurrency-repo --region us-west-2
+
+# Authenticate Docker to ECR
+aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 1494939439.dkr.ecr.us-west-2.amazonaws.com
+
+# Build the Docker image
+docker build -t high-concurrency-microservice:latest .
+
+# Tag the Docker image
+docker tag high-concurrency-microservice:latest 1494939439.dkr.ecr.us-west-2.amazonaws.com/high-concurrency-repo:latest
+
+# Push the Docker image to ECR
+docker push 1494939439.dkr.ecr.us-west-2.amazonaws.com/high-concurrency-repo:latest
+
+Replace 1494939439 with your account id
+
+Step 3: Run the CloudFormation Command: Once your AWS CLI is configured, 
+you can run the CloudFormation command to create your stack. Ensure you replace the placeholders with your actual values.
+
+For linux, run the following command:
+
+aws cloudformation create-stack \
+    --stack-name HighConcurrencyMicroserviceStack \
+    --template-body file://template.yaml \
+    --parameters ParameterKey=VpcId,ParameterValue=<your-vpc-id> \
+                 ParameterKey=SubnetIds,ParameterValue=<your-subnet-ids> \
+                 ParameterKey=ClusterName,ParameterValue=HighConcurrencyCluster \
+                 ParameterKey=ContainerName,ParameterValue=high-concurrency-container \
+                 ParameterKey=ContainerPort,ParameterValue=8080 \
+                 ParameterKey=DesiredCount,ParameterValue=1 \
+                 ParameterKey=EcrRepositoryName,ParameterValue=high-concurrency-repo \
+                 ParameterKey=CreateEcrRepository,ParameterValue=false  \
+    --capabilities CAPABILITY_IAM
+
+For Windows PowerShell, run the following command:
+
+aws cloudformation create-stack ^
+    --stack-name HighConcurrencyMicroserviceStack ^
+    --template-body file://template.yaml ^
+    --parameters ParameterKey=VpcId,ParameterValue=vpc-4013434302dd ^
+                 ParameterKey=SubnetIds,ParameterValue=subnet-4334343489kb0 ^
+                 ParameterKey=ClusterName,ParameterValue=HighConcurrencyCluster ^
+                 ParameterKey=ContainerName,ParameterValue=high-concurrency-container ^
+                 ParameterKey=ContainerPort,ParameterValue=8080 ^
+                 ParameterKey=DesiredCount,ParameterValue=1 ^
+                 ParameterKey=EcrRepositoryName,ParameterValue=high-concurrency-repo ^
+                 ParameterKey=CreateEcrRepository,ParameterValue=false ^
+    --capabilities CAPABILITY_IAM
+
+
+
+you need to provide values for the parameters in the CloudFormation template. Here’s a detailed explanation of each parameter and what values you should provide:
+
+VpcId: The ID of the VPC (Virtual Private Cloud) where you want to deploy your ECS Cluster.
+SubnetIds: The IDs of the subnets within the VPC where your ECS tasks will run. These should be provided as a comma-separated list.
+ClusterName: The name you want to assign to your ECS Cluster. You can use the default value or provide a custom name.
+ContainerName: The name of your container. You can use the default value or provide a custom name.
+ContainerPort: The port on which your container listens. You can use the default value or provide a custom port number.
+DesiredCount: The desired number of tasks in the ECS service. You can use the default value or provide a custom number.
+EcrRepositoryName: The name of your ECR (Elastic Container Registry) repository. You can use the default value or provide a custom name.
+
+Replace the placeholder values (<your-vpc-id>, <your-subnet-ids>, etc.) with your specific values. For example:
+
+VpcId: Replace <your-vpc-id> with the actual VPC ID, e.g., vpc-123abc45.
+SubnetIds: Replace <your-subnet-ids> with the actual subnet IDs, e.g., subnet-678def90,subnet-11223344.
+ClusterName: You can keep the default value or provide a custom name, e.g., MyHighConcurrencyCluster.
+ContainerName: You can keep the default value or provide a custom name, e.g., my-high-concurrency-container.
+ContainerPort: You can keep the default value or provide a custom port, e.g., 8080.
+DesiredCount: You can keep the default value or provide a custom number, e.g., 1.
+EcrRepositoryName: You can keep the default value or provide a custom name, e.g., my-high-concurrency-repo.

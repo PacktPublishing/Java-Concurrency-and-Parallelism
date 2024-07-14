@@ -1,0 +1,149 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template to deploy a high-concurrency microservice using Project Loom and Akka in AWS ECS with Fargate.
+
+Parameters:
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: VPC ID for the ECS Cluster
+  SubnetIds:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: Subnet IDs for the ECS Cluster
+  ClusterName:
+    Type: String
+    Default: HighConcurrencyCluster
+    Description: Name of the ECS Cluster
+  ContainerName:
+    Type: String
+    Default: high-concurrency-container
+    Description: Name of the container
+  ContainerPort:
+    Type: Number
+    Default: 8080
+    Description: Port on which the container listens
+  DesiredCount:
+    Type: Number
+    Default: 1
+    Description: Desired number of tasks in the ECS service
+  EcrRepositoryName:
+    Type: String
+    Default: high-concurrency-repo
+    Description: Name of the ECR repository
+  CreateEcrRepository:
+    Type: String
+    Default: "true"
+    AllowedValues: ["true", "false"]
+    Description: Whether to create a new ECR repository
+
+Conditions:
+  CreateEcrRepo: !Equals [!Ref CreateEcrRepository, "true"]
+
+Resources:
+  EcrRepository:
+    Type: AWS::ECR::Repository
+    Condition: CreateEcrRepo
+    Properties:
+      RepositoryName: !Ref EcrRepositoryName
+
+  EcsCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Ref ClusterName
+
+  ExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: ECSExecutionPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:BatchGetImage
+                  - ecr:GetAuthorizationToken
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: '*'
+
+  TaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: ECSTaskPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                Resource: '*'
+
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /ecs/high-concurrency-service
+      RetentionInDays: 30
+
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: high-concurrency-task
+      ExecutionRoleArn: !GetAtt ExecutionRole.Arn
+      TaskRoleArn: !GetAtt TaskRole.Arn
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: 1024
+      Memory: 2048
+      ContainerDefinitions:
+        - Name: !Ref ContainerName
+          Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${EcrRepositoryName}:latest"
+          PortMappings:
+            - ContainerPort: !Ref ContainerPort
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref LogGroup
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: ecs
+
+  EcsService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref EcsCluster
+      DesiredCount: !Ref DesiredCount
+      LaunchType: FARGATE
+      TaskDefinition: !Ref TaskDefinition
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          SecurityGroups: []
+          Subnets: !Ref SubnetIds
+
+Outputs:
+  EcsClusterName:
+    Description: Name of the ECS Cluster
+    Value: !Ref EcsCluster
+  EcsServiceName:
+    Description: Name of the ECS Service
+    Value: !Ref EcsService
+  EcrRepositoryUri:
+    Description: URI of the ECR Repository
+    Condition: CreateEcrRepo
+    Value: !GetAtt EcrRepository.RepositoryUri
