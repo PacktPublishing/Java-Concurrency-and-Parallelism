@@ -1,0 +1,11 @@
+FROM quay.io/quarkus/ubi-quarkus-native-image:21.0.0-java11 AS build
+COPY target/*-runner /work/application
+WORKDIR /work/
+RUN chmod 775 /work/application
+
+FROM registry.access.redhat.com/ubi8/ubi-minimal
+WORKDIR /work/
+COPY --from=build /work/application /work/application
+RUN chmod 775 /work/application
+EXPOSE 8080
+CMD ["./application", "-Dquarkus.http.host=0.0.0.0"]

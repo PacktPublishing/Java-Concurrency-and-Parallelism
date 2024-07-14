@@ -1,0 +1,18 @@
+# Start with a GraalVM image for native building
+FROM quay.io/quarkus/ubi-quarkus-native-image:22.3-java17 AS build
+WORKDIR /project
+
+COPY mvnw .
+COPY .mvn .mvn
+COPY pom.xml .
+COPY src src
+
+RUN ./mvnw package -Pnative -Dnative-image.docker-build=true
+
+# Use a minimal base image for the runtime
+FROM registry.access.redhat.com/ubi8/ubi-minimal:8.5
+WORKDIR /work/
+COPY --from=build /project/target/*-runner /work/application
+
+ENTRYPOINT [ "./application" ]
+
