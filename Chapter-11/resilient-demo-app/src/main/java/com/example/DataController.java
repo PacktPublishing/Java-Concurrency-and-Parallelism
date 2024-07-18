@@ -19,7 +19,7 @@ public class DataController {
 
     @PostMapping("/s3")
     public String replicateToS3(@RequestParam String key, @RequestParam String content) {
-        dataService.replicateToS3(key, content);
+        dataService.replicateToS3(key, content, content);
         return "Data replicated to S3";
     }
 

@@ -21,13 +21,14 @@
     <maven.compiler.target>11</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <spring-cloud.version>2021.0.5</spring-cloud.version>
+    <aws.sdk.version>2.17.102</aws.sdk.version>
   </properties>
 
   <dependencies>
     <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-java-sdk-bom</artifactId>
-      <version>1.12.528</version>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>bom</artifactId>
+      <version>${aws.sdk.version}</version>
       <type>pom</type>
       <scope>import</scope>
     </dependency>
@@ -41,25 +42,20 @@
       <artifactId>spring-cloud-function-context</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-java-sdk-elasticloadbalancingv2</artifactId>
-      <version>1.12.118</version> <!-- Replace with the desired version -->
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>elasticloadbalancingv2</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-java-sdk-elasticloadbalancing</artifactId>
-      <version>1.12.118</version> <!-- Use the latest version available -->
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>elasticloadbalancing</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-lambda-java-log4j2</artifactId>
-      <version>1.5.1</version>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>dynamodb</artifactId>
     </dependency>
-    <!-- AWS Java SDK for DynamoDB -->
     <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-java-sdk-dynamodb</artifactId>
-      <version>1.12.529</version>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>cloudwatch</artifactId>
     </dependency>
 
     <!-- SLF4J API -->
@@ -122,6 +118,13 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+      <dependency>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>bom</artifactId>
+        <version>${aws.sdk.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -138,6 +141,9 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <mainClass>com.example.MonitoringApplication</mainClass>
+        </configuration>
         <dependencies>
           <dependency>
             <groupId>org.springframework.boot.experimental</groupId>
