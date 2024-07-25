@@ -1,0 +1,14 @@
+[
+    {
+        "name": "com.example.ImageAnalysisCoordinator",
+        "allDeclaredConstructors": true,
+        "allDeclaredMethods": true,
+        "allDeclaredFields": true
+    },
+    {
+        "name": "com.example.AwsClientProducer",
+        "allDeclaredConstructors": true,
+        "allDeclaredMethods": true,
+        "allDeclaredFields": true
+    }
+]

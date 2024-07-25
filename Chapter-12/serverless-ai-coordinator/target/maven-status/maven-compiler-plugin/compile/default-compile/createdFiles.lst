@@ -1,0 +1,5 @@
+com\example\AwsClientProducer.class
+com\example\ProductRepository.class
+com\example\ProductResource.class
+com\example\ImageAnalysisCoordinator.class
+com\example\Product.class
