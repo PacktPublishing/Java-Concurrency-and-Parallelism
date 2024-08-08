@@ -1,0 +1,7 @@
+{
+    "github.copilot.editor.enableAutoCompletions": false,
+    "cSpell.words": [
+        "mycompany"
+    ],
+    "github.copilot.inlineSuggest.enable": true,
+}
