@@ -1,2 +1,2 @@
-# Parallel-Programming-and-Concurrency-in-Java
-Parallel Programming and Concurrency in Java, published by Packt
+# Java-Concurrency-and-Parallelism
+Java Concurrency and Parallelism, published by Packt
