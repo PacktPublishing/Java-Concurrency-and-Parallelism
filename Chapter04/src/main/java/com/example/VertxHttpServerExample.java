@@ -17,9 +17,9 @@ public class VertxHttpServerExample extends AbstractVerticle {
                 request.response().setStatusCode(404).end("Not Found");
             }
         });
-        server.listen(8080, result -> {
+        server.listen(8082, result -> {
             if (result.succeeded()) {
-                System.out.println("Server started on port 8080");
+                System.out.println("Server started on port 8082");
             } else {
                 System.err.println("Failed to start server: " + result.cause());
             }

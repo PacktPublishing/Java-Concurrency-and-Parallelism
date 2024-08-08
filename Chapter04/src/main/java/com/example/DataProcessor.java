@@ -7,6 +7,7 @@ import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
 
 public class DataProcessor extends AbstractBehavior<DataProcessor.DataCommand> {
+
     interface DataCommand {
     }
 
@@ -46,8 +47,8 @@ public class DataProcessor extends AbstractBehavior<DataProcessor.DataCommand> {
         try {
             getContext().getLog().info("Processing data: {}", data.content);
             // Data processing logic here
-            DataResult dataResult = new DataResult("Processed: " + data.content);
-            getContext().getLog().info("Data processed, result: {}", dataResult.result);
+            @SuppressWarnings("unused")
+            DataResult result = new DataResult("Processed: " + data.content);
             return this;
         } catch (Exception e) {
             getContext().getLog().error("Error processing data: {}", data.content, e);
@@ -55,9 +56,8 @@ public class DataProcessor extends AbstractBehavior<DataProcessor.DataCommand> {
         }
     }
 
-    private Behavior<DataCommand> onDataResult(DataResult dataResult) {
-        getContext().getLog().info("Received data result: {}", dataResult.result);
-        // Additional handling for data result
+    private Behavior<DataCommand> onDataResult(DataResult result) {
+        // Handle DataResult if needed
         return this;
     }
 }

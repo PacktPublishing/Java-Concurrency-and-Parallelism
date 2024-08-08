@@ -25,6 +25,7 @@ public class DataAccessCoordinator {
 
     public static void main(String[] args) {
         DataAccessCoordinator coordinator = new DataAccessCoordinator(5);
+
         // Simulate multiple services accessing data concurrently
         for (int i = 0; i < 10; i++) {
             new Thread(coordinator::accessData, "Service-" + i).start();
