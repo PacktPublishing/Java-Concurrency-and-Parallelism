@@ -1,3 +1,5 @@
+package com.example;
+
 import java.util.stream.IntStream;
 
 public class ParallelKitchen {
@@ -6,7 +8,7 @@ public class ParallelKitchen {
             System.out.println("Cooking dish #" + i + " in parallel...");
             // Simulate task
             try {
-                Thread.sleep(1000);
+                Thread.sleep(600);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }

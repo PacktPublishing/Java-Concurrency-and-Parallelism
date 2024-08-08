@@ -1,0 +1,133 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.example</groupId>
+    <artifactId>S3ObjectProcessor</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <properties>
+        <maven.compiler.source>18</maven.compiler.source>
+        <maven.compiler.target>18</maven.compiler.target>
+        <junit.jupiter.version>5.9.3</junit.jupiter.version>
+        <mockito.version>4.3.1</mockito.version>
+        <aws.java.sdk.version>2.26.26</aws.java.sdk.version>
+        <slf4j.version>2.0.9</slf4j.version>
+    </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>bom</artifactId>
+                <version>2.20.67</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <dependencies>
+        <!-- AWS SDK v2 -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>lambda</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-core</artifactId>
+            <version>3.4.0</version>
+        </dependency>
+        <!-- Akka Actor -->
+    <dependency>
+        <groupId>com.typesafe.akka</groupId>
+        <artifactId>akka-actor_2.13</artifactId>
+        <version>2.6.20</version>
+    </dependency>
+
+    <!-- Akka Stream -->
+    <dependency>
+        <groupId>com.typesafe.akka</groupId>
+        <artifactId>akka-stream_2.13</artifactId>
+        <version>2.6.20</version>
+    </dependency>
+
+    <!-- Akka SLF4J (for logging) -->
+    <dependency>
+        <groupId>com.typesafe.akka</groupId>
+        <artifactId>akka-slf4j_2.13</artifactId>
+        <version>2.6.20</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.curator</groupId>
+        <artifactId>curator-framework</artifactId>
+        <version>5.3.0</version>
+    </dependency>
+
+    <!-- Curator Client -->
+    <dependency>
+        <groupId>org.apache.curator</groupId>
+        <artifactId>curator-client</artifactId>
+        <version>5.3.0</version>
+    </dependency>
+
+    <!-- Curator Recipes (optional, for additional features like locks, leader election, etc.) -->
+    <dependency>
+        <groupId>org.apache.curator</groupId>
+        <artifactId>curator-recipes</artifactId>
+        <version>5.3.0</version>
+    </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+        </dependency>
+        <!-- AWS Lambda Java Core Events -->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-lambda-java-core</artifactId>
+            <version>1.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-lambda-java-events</artifactId>
+            <version>3.11.0</version>
+        </dependency>
+        <!-- SLF4J for logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <!-- JUnit 5 for testing -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Mockito for testing -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M5</version>
+            </plugin>
+        </plugins>
+    </build>
+</project>

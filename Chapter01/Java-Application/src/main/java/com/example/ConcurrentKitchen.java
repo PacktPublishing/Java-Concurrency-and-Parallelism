@@ -1,3 +1,4 @@
+package com.example;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -6,7 +7,7 @@ import java.util.concurrent.Future;
 
 public class ConcurrentKitchen {
     public static void main(String[] args) {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
+        ExecutorService executor = Executors.newFixedThreadPool(2);
 
         Future<?> task1 = executor.submit(() -> {
             System.out.println("Chopping vegetables...");
@@ -17,13 +18,6 @@ public class ConcurrentKitchen {
                 Thread.currentThread().interrupt();
             }
         });
-        try {
-            task1.get(); // Add this line to ensure the task is executed
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        } catch (ExecutionException e) {
-            // Handle the exception appropriately
-        }
 
         Future<?> task2 = executor.submit(() -> {
             System.out.println("Grilling meat...");
@@ -34,15 +28,15 @@ public class ConcurrentKitchen {
                 Thread.currentThread().interrupt();
             }
         });
+
+        // Wait for both tasks to complete
         try {
-            task2.get(); // Add this line to ensure the task is executed
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        } catch (ExecutionException e) {
-            // Handle the exception appropriately
+            task1.get();
+            task2.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
         }
 
         executor.shutdown();
     }
 }
-
