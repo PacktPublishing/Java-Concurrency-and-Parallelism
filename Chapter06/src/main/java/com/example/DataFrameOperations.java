@@ -1,5 +1,7 @@
 package com.example;
 
+import static org.apache.spark.sql.functions.*; // Importing Spark SQL functions
+
 import java.util.List;
 
 import org.apache.spark.api.java.JavaRDD;
@@ -8,7 +10,6 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.RowFactory;
 import org.apache.spark.sql.SparkSession;
-import org.apache.spark.sql.functions;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructType;
 
@@ -40,10 +41,10 @@ public class DataFrameOperations {
         Dataset<Row> df = spark.createDataFrame(rowRDD, schema);
 
         // Filtering, selecting, and manipulating the DataFrame
-        Dataset<Row> filteredDf = df.filter(functions.col("age").gt(25));
+        Dataset<Row> filteredDf = df.filter(col("age").gt(25));
         Dataset<Row> selectedDf = df.select("name", "age");
-        Dataset<Row> newDf = df.withColumn("doubledAge", functions.col("age").multiply(2));
-        Dataset<Row> aggregatedDf = df.groupBy("age").agg(functions.count("*").as("count"));
+        Dataset<Row> newDf = df.withColumn("doubledAge", col("age").multiply(2));
+        Dataset<Row> aggregatedDf = df.groupBy("age").agg(count("*").as("count"));
 
         // Output filtered, selected, and aggregated dataframes
         filteredDf.show();
