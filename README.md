@@ -1,2 +1,47 @@
-# Java-Concurrency-and-Parallelism
-Java Concurrency and Parallelism, published by Packt
+# Java Concurrency and Parallelism
+
+
+<a href="<Packtpub book link>?utm_source=github&utm_medium=repository&utm_campaign=<13-P ISBN>"><img src="https://static.packt-cdn.com/products/<13-P ISBN>/cover/smaller" alt="<Book Name>" height="256px" align="right"></a>
+
+This is the code repository for [Java Concurrency and Parallelism](<Packtpub book link>?utm_source=github&utm_medium=repository&utm_campaign=<13-P ISBN>), published by Packt.
+
+**Master advanced Java techniques for cloud-based applications through concurrency and parallelism**
+
+## What is this book about?
+Build advanced concurrent and parallel processing skills for cloud-native Java applications. From essential concepts and practical implementations to emerging trends, this book equips you with skills to build scalable, high-performance solutions in today's dynamic tech landscape.
+
+This book covers the following exciting features: 
+<What you will learn, in bullet points>
+
+If you feel this book is for you, get your [copy](https://www.amazon.com/dp/) today!
+
+<a href="https://www.packtpub.com/?utm_source=github&utm_medium=banner&utm_campaign=GitHubBanner"><img src="https://raw.githubusercontent.com/PacktPublishing/GitHub/master/GitHub.png" alt="https://www.packtpub.com/" border="5" /></a>
+
+## Instructions and Navigations
+All of the code is organized into folders.
+
+The code will look like the following:
+```
+<Any code block from the book>
+
+```
+
+**Following is what you need for this book:**
+This book is for Java developers, software engineers, and cloud architects with intermediate Java knowledge. It's ideal for professionals transitioning to cloud-native development or seeking to enhance their concurrent programming skills. DevOps engineers and tech leads involved in cloud migration will also find valuable insights. Basic Java proficiency, familiarity with cloud concepts, and some experience with distributed systems is expected.
+
+With the following software and hardware list you can run all code files present in the book (Chapter 1-12).
+
+### Software and Hardware List
+
+| Chapter  | Software required                                                                    | OS required                        |
+| -------- | -------------------------------------------------------------------------------------| -----------------------------------|
+|  	1-12	   |   			Java, AWS account, Spring cloud, Docker and Quarkus				                  | Windows, Mac OS X, and Linux (Any) |
+
+### Related products <Other books you may enjoy>
+* Designing Hexagonal Architecture with Java [[Packt]](https://www.packtpub.com/en-us/product/designing-hexagonal-architecture-with-java-9781837635115) [[Amazon]](https://www.amazon.com/Designing-Hexagonal-Architecture-Java-change-tolerant/dp/1801816484)
+
+* <Book name #2 from backmatter> [[Packt]](<Book link on Packtpub>) [[Amazon]](https://www.amazon.com/dp/<10P-ISBN>)
+
+## Get to Know the Author(s)
+**Jay Wang**, a trailblazer in the IT sector, boasts a career spanning over two decades, marked by leadership roles at IT powerhouses such as Accenture, IBM, and a globally renowned telecommunications firm. An expert in Java since 2001 and cloud technologies since 2018, Jay excels in transitioning projects from monolithic to microservice architectures and cloud. As founder of Digitech Edge, he guides clients through AI-driven cloud solutions. His educational background includes an MS in management of IT from the University of Virginia and an MS in information systems from George Mason University.
+
