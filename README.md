@@ -29,7 +29,20 @@ All of the code is organized into folders.
 
 The code will look like the following:
 ```
-<Any code block from the book>
+import java.util.stream.IntStream;
+public class ParallelKitchen {
+    public static void main(String[] args) {
+        IntStream.range(0, 10).parallel().forEach(i -> {
+            System.out.println(“Cooking dish #” + i + “ in parallel...”);
+            // Simulate task
+            try {
+                    Thread.sleep(600);
+                } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        });
+    }
+}
 
 ```
 
@@ -47,7 +60,7 @@ With the following software and hardware list you can run all code files present
 ### Related products <Other books you may enjoy>
 * Designing Hexagonal Architecture with Java [[Packt]](https://www.packtpub.com/en-us/product/designing-hexagonal-architecture-with-java-9781837635115) [[Amazon]](https://www.amazon.com/Designing-Hexagonal-Architecture-Java-change-tolerant/dp/1837635110)
 
-* Practical Design Patterns for Java Developers [[Packt]](https://www.packtpub.com/en-us/product/practical-design-patterns-for-java-developers-9781804614679) [[Amazon]]([https://www.amazon.com/dp/<10P-ISBN>](https://www.amazon.com/Practical-Design-Patterns-Java-Developers/dp/180461467X)
+* Practical Design Patterns for Java Developers [[Packt]](https://www.packtpub.com/en-us/product/practical-design-patterns-for-java-developers-9781804614679) [[Amazon]](https://www.amazon.com/Practical-Design-Patterns-Java-Developers/dp/180461467X)
 
 ## Get to Know the Author(s)
 **Jay Wang**, a trailblazer in the IT sector, boasts a career spanning over two decades, marked by leadership roles at IT powerhouses such as Accenture, IBM, and a globally renowned telecommunications firm. An expert in Java since 2001 and cloud technologies since 2018, Jay excels in transitioning projects from monolithic to microservice architectures and cloud. As founder of Digitech Edge, he guides clients through AI-driven cloud solutions. His educational background includes an MS in management of IT from the University of Virginia and an MS in information systems from George Mason University.
