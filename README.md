@@ -1,6 +1,5 @@
 # Java Concurrency and Parallelism
 
-
 <a href="<Packtpub book link>?utm_source=github&utm_medium=repository&utm_campaign=<13-P ISBN>"><img src="https://static.packt-cdn.com/products/<13-P ISBN>/cover/smaller" alt="<Book Name>" height="256px" align="right"></a>
 
 This is the code repository for [Java Concurrency and Parallelism](<Packtpub book link>?utm_source=github&utm_medium=repository&utm_campaign=<13-P ISBN>), published by Packt.
@@ -11,9 +10,17 @@ This is the code repository for [Java Concurrency and Parallelism](<Packtpub boo
 Build advanced concurrent and parallel processing skills for cloud-native Java applications. From essential concepts and practical implementations to emerging trends, this book equips you with skills to build scalable, high-performance solutions in today's dynamic tech landscape.
 
 This book covers the following exciting features: 
-<What you will learn, in bullet points>
+* Understand Java concurrency in cloud app development
+* Get to grips with the core concepts of serverless computing in Java
+* Boost cloud scaling and performance using Java skills
+* Implement Java GPU acceleration for advanced computing tasks
+* Gain insights into Java's role in the evolving cloud and AI technology
+* Access hands-on exercises for real-world Java applications
+* Explore diverse Java case studies in tech and fintech
+* Implement Java in AI-driven cloud and data workflows
+* Analyze Java's application in IoT and real-time analytics
 
-If you feel this book is for you, get your [copy](https://www.amazon.com/dp/) today!
+If you feel this book is for you, get your [copy](https://www.amazon.com/dp/1805129260) today!
 
 <a href="https://www.packtpub.com/?utm_source=github&utm_medium=banner&utm_campaign=GitHubBanner"><img src="https://raw.githubusercontent.com/PacktPublishing/GitHub/master/GitHub.png" alt="https://www.packtpub.com/" border="5" /></a>
 
@@ -38,9 +45,9 @@ With the following software and hardware list you can run all code files present
 |  	1-12	   |   			Java, AWS account, Spring cloud, Docker and Quarkus				                  | Windows, Mac OS X, and Linux (Any) |
 
 ### Related products <Other books you may enjoy>
-* Designing Hexagonal Architecture with Java [[Packt]](https://www.packtpub.com/en-us/product/designing-hexagonal-architecture-with-java-9781837635115) [[Amazon]](https://www.amazon.com/Designing-Hexagonal-Architecture-Java-change-tolerant/dp/1801816484)
+* Designing Hexagonal Architecture with Java [[Packt]](https://www.packtpub.com/en-us/product/designing-hexagonal-architecture-with-java-9781837635115) [[Amazon]](https://www.amazon.com/Designing-Hexagonal-Architecture-Java-change-tolerant/dp/1837635110)
 
-* <Book name #2 from backmatter> [[Packt]](<Book link on Packtpub>) [[Amazon]](https://www.amazon.com/dp/<10P-ISBN>)
+* Practical Design Patterns for Java Developers [[Packt]](https://www.packtpub.com/en-us/product/practical-design-patterns-for-java-developers-9781804614679) [[Amazon]]([https://www.amazon.com/dp/<10P-ISBN>](https://www.amazon.com/Practical-Design-Patterns-Java-Developers/dp/180461467X)
 
 ## Get to Know the Author(s)
 **Jay Wang**, a trailblazer in the IT sector, boasts a career spanning over two decades, marked by leadership roles at IT powerhouses such as Accenture, IBM, and a globally renowned telecommunications firm. An expert in Java since 2001 and cloud technologies since 2018, Jay excels in transitioning projects from monolithic to microservice architectures and cloud. As founder of Digitech Edge, he guides clients through AI-driven cloud solutions. His educational background includes an MS in management of IT from the University of Virginia and an MS in information systems from George Mason University.
