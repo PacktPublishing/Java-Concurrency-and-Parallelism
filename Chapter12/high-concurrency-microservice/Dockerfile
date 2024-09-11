@@ -1,8 +1,7 @@
 # Use an official Maven image to build the application
 FROM maven:3.8.4-openjdk-17-slim AS builder
 WORKDIR /workspace
-COPY pom.xml .
-COPY src ./src
+COPY . .
 RUN mvn package -DskipTests
 
 # Use the Amazon Corretto image to run the application

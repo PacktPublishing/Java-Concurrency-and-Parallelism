@@ -1,37 +1,44 @@
 package com.example;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import akka.actor.typed.ActorSystem;
 import akka.actor.typed.Behavior;
-import akka.actor.typed.Props;
 import akka.actor.typed.javadsl.Behaviors;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.S3Configuration;
 
 public class HighConcurrencyService {
 
     public static void main(String[] args) {
-        ActorSystem<Void> actorSystem = ActorSystem.create(Behaviors.empty(), "high-concurrency-system");
-        S3Client s3Client = S3Client.create();
-        ExecutorService executorService = Executors.newCachedThreadPool(); // Use a compatible thread pool
+        S3Client s3Client = S3Client.builder()
+                .region(Region.US_WEST_2) // Ensure this matches your bucket's region
+                .credentialsProvider(StaticCredentialsProvider.create(
+                        AwsBasicCredentials.create("Your Access Key", "Your Secret Access Key")))
+                .serviceConfiguration(S3Configuration.builder()
+                        .pathStyleAccessEnabled(true)
+                        .build())
+                .build();
 
-        for (int i = 0; i < 1000; i++) {
-            final int index = i;
-            executorService.submit(() -> {
-                // Create and start the actor
+        ActorSystem<Void> actorSystem = ActorSystem.create(Behaviors.setup(context -> {
+            for (int i = 0; i < 1000; i++) {
                 Behavior<RequestHandlerActor.HandleRequest> behavior = RequestHandlerActor.create(s3Client);
-                var requestHandlerActor = actorSystem.systemActorOf(behavior, "request-handler-" + index,
-                        Props.empty());
+                var requestHandlerActor = context.spawn(behavior, "request-handler-" + i);
+                requestHandlerActor.tell(
+                        new RequestHandlerActor.HandleRequest("example-bucket", "example-key-" + i, "example-content"));
+            }
+            return Behaviors.empty();
+        }), "high-concurrency-system");
 
-                // Send a request to the actor
-                requestHandlerActor.tell(new RequestHandlerActor.HandleRequest("example-bucket", "example-key-" + index,
-                        "example-content"));
-            });
+        // Wait for a while to allow actors to process messages
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
         // Clean up
-        executorService.shutdown();
         actorSystem.terminate();
     }
 }
