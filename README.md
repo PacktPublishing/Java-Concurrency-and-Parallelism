@@ -1,8 +1,8 @@
 # Java Concurrency and Parallelism
 
-<a href="<Packtpub book link>?utm_source=github&utm_medium=repository&utm_campaign=<13-P ISBN>"><img src="https://static.packt-cdn.com/products/<13-P ISBN>/cover/smaller" alt="<Book Name>" height="256px" align="right"></a>
+<a href="https://www.packtpub.com/en-us/product/java-concurrency-and-parallelism-9781805129264"><img src="https://content.packt.com/_/image/xxlarge/B20937/cover_image_large.jpg" alt="Java Concurrency and Parallelism" height="256px" align="right"></a>
 
-This is the code repository for [Java Concurrency and Parallelism](<Packtpub book link>?utm_source=github&utm_medium=repository&utm_campaign=<13-P ISBN>), published by Packt.
+This is the code repository for [Java Concurrency and Parallelism](https://www.packtpub.com/en-us/product/java-concurrency-and-parallelism-9781805129264), published by Packt.
 
 **Master advanced Java techniques for cloud-based applications through concurrency and parallelism**
 
